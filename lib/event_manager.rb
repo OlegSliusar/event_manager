@@ -20,6 +20,23 @@ def clean_phone_number(phone_number)
   end
 end
 
+def get_peak_hours(contents)
+  hours = Hash.new(0)
+  hours_sorted = []
+  contents.each do |row|
+    date_string = row[:regdate]
+    date_hour = DateTime.strptime(date_string, "%m/%d/%Y %H:%M").hour
+    hours[date_hour] += 1
+  end
+  hours_sorted = hours.sort_by { |hour, counter| counter }
+  hours_sorted = hours_sorted[-3..-1]
+  peak_hours = []
+  hours_sorted.each do |ary|
+    peak_hours << ary[0]
+  end
+  peak_hours
+end
+
 def legislators_by_zipcode(zipcode)
   Sunlight::Congress::Legislator.by_zipcode(zipcode)
 end
@@ -55,3 +72,8 @@ contents.each do |row|
 
   save_thank_you_letters(id, from_letter)
 end
+
+contents = CSV.open "event_attendees.csv", headers: true, header_converters: :symbol
+
+peak_hours = get_peak_hours(contents)
+puts "Peak hours are: #{peak_hours.join(', ')}"
