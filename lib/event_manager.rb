@@ -37,6 +37,23 @@ def get_peak_hours(contents)
   peak_hours
 end
 
+def get_peak_days_of_weeks(contents)
+  days = Hash.new(0)
+  days_sorted = []
+  contents.each do |row|
+    date_string = row[:regdate]
+    date_day = DateTime.strptime(date_string, "%m/%d/%Y %H:%M").wday
+    days[date_day] += 1
+  end
+  days_sorted = days.sort_by { |day, counter| counter }
+  days_sorted = days_sorted[-3..-1]
+  peak_days = []
+  days_sorted.each do |ary|
+    peak_days << ary[0]
+  end
+  peak_days
+end
+
 def legislators_by_zipcode(zipcode)
   Sunlight::Congress::Legislator.by_zipcode(zipcode)
 end
@@ -52,6 +69,18 @@ def save_thank_you_letters(id, from_letter)
 end
 
 puts "EventManager Initialized!"
+
+# Display peak hours of the day
+contents = CSV.open "event_attendees.csv", headers: true, header_converters: :symbol
+peak_hours = get_peak_hours(contents)
+puts "Peak hours are: #{peak_hours.join(', ')}"
+
+# Display peak days of the week
+contents = CSV.open "event_attendees.csv", headers: true, header_converters: :symbol
+days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+peak_days_of_weeks = get_peak_days_of_weeks(contents)
+peak_days_of_weeks = peak_days_of_weeks.collect { |i| days[i] }
+puts "Peak days of week are: #{peak_days_of_weeks.join(', ')}"
 
 contents = CSV.open "event_attendees.csv", headers: true, header_converters: :symbol
 
@@ -72,8 +101,3 @@ contents.each do |row|
 
   save_thank_you_letters(id, from_letter)
 end
-
-contents = CSV.open "event_attendees.csv", headers: true, header_converters: :symbol
-
-peak_hours = get_peak_hours(contents)
-puts "Peak hours are: #{peak_hours.join(', ')}"
