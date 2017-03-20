@@ -5,7 +5,9 @@ contents = CSV.open "event_attendees.csv", headers: true, header_converters: :sy
 contents.each do |row|
   name = row[:first_name]
   zipcode = row[:zipcode]
-  if zipcode.length < 5
+  if zipcode.nil?
+    zipcode = "0" * 5
+  elsif zipcode.length < 5
     zipcode = zipcode.rjust(5, '0')
   elsif zipcode.length > 5
     zipcode = zipcode.slice(0, 5)
