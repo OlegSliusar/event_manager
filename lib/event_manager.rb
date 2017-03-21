@@ -77,9 +77,8 @@ puts "Peak hours are: #{peak_hours.join(', ')}"
 
 # Display peak days of the week
 contents = CSV.open "event_attendees.csv", headers: true, header_converters: :symbol
-days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
-peak_days_of_weeks = get_peak_days_of_weeks(contents)
-peak_days_of_weeks = peak_days_of_weeks.collect { |i| days[i] }
+days = %w(Sunday Monday Tuesday Wednesday Thursday Friday Saturday)
+peak_days_of_weeks = get_peak_days_of_weeks(contents).collect { |i| days[i] }
 puts "Peak days of week are: #{peak_days_of_weeks.join(', ')}"
 
 contents = CSV.open "event_attendees.csv", headers: true, header_converters: :symbol
